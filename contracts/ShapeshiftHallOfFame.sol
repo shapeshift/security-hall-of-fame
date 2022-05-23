@@ -30,7 +30,7 @@ contract ShapeshiftHallOfFame is ERC721, ERC721URIStorage, Ownable {
     constructor(uint256 _timelockDuration)
         ERC721("Shapeshift Hall of Fame", "SHOF")
     {
-        timelockDuration = _timelockDuration;
+        setTimelockDuration(_timelockDuration);
     }
 
     function _baseURI() internal pure override returns (string memory) {
@@ -49,7 +49,14 @@ contract ShapeshiftHallOfFame is ERC721, ERC721URIStorage, Ownable {
     }
 
     /**
-     * @notice Allow the token owner to change their token's URI after the timelock is lifted
+     * @notice Sets a new timelock duration
+     */
+    function setTimelockDuration(uint256 _timelockDuration) public onlyOwner {
+        timelockDuration = _timelockDuration;
+    }
+
+    /**
+     * @notice Allows the token owner to change their token's URI after the timelock is lifted
      */
     function setTokenURI(uint256 tokenId, string memory _tokenURI)
         public

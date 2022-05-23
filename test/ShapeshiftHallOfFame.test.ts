@@ -95,6 +95,32 @@ describe("ShapeshiftHallOfFame", async function () {
       // Expect recipient1 to have zero balance
       await expect(await nftContract.balanceOf(recipient1)).eq(0);
     });
+
+    it("Should be able to change the timelock duration", async function () {
+      const recipient1 = accounts[0].address;
+
+      // Confirm the timelock duration is set to default
+      await expect(await nftContract.timelockDuration()).eq(
+        constants.TIMELOCK_DURATION
+      );
+
+      // Change the timelock duration
+      await nftContract.setTimelockDuration(1000);
+
+      // Confirm the timelock duration has been changed
+      await expect(await nftContract.timelockDuration()).eq(1000);
+
+      await nftContract.safeMint(recipient1, constants.TEST_URI);
+      await network.provider.send("evm_increaseTime", [1000]);
+
+      // Timelock should be lifted in accordance with the new value
+      await nftContract.setTokenURI(0, constants.TEST_URI_V2);
+
+      // Confirm updated URI
+      await expect(await nftContract.tokenURI(0)).eq(
+        "ipfs://" + constants.TEST_URI_V2
+      );
+    });
   });
 
   describe("fail states", function () {
