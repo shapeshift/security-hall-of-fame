@@ -15,7 +15,7 @@ contract ShapeshiftHallOfFame is ERC721, ERC721URIStorage, Ownable {
     // Mapping from token ID to timelock end time
     mapping(uint256 => uint256) public timelocks;
 
-    // Token timelock duration after it's minted
+    // Token timelock duration (in seconds) after it's been minted
     uint256 public timelockDuration;
 
     // Check if the timelock is over for the given token
@@ -40,16 +40,16 @@ contract ShapeshiftHallOfFame is ERC721, ERC721URIStorage, Ownable {
     /**
      * @notice Mints the NFT, setting its URI and timelock end time
      */
-    function safeMint(address to, string memory uri) public onlyOwner {
+    function safeMint(address to, string memory uri) external onlyOwner {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
+        timelocks[tokenId] = block.timestamp + timelockDuration;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
-        timelocks[tokenId] = block.timestamp + timelockDuration;
     }
 
     /**
-     * @notice Sets a new timelock duration
+     * @notice Sets a new timelock duration (in seconds)
      */
     function setTimelockDuration(uint256 _timelockDuration) public onlyOwner {
         timelockDuration = _timelockDuration;
@@ -59,7 +59,7 @@ contract ShapeshiftHallOfFame is ERC721, ERC721URIStorage, Ownable {
      * @notice Allows the token owner to change their token's URI after the timelock is lifted
      */
     function setTokenURI(uint256 tokenId, string memory _tokenURI)
-        public
+        external
         timelockLifted(tokenId)
     {
         require(

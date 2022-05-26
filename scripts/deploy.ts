@@ -1,16 +1,20 @@
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { DeployFunction } from "hardhat-deploy/types";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { TIMELOCK_DURATION } from "../test/constants";
+import { TIMELOCK_DURATION } from "../test/constants"
+require("dotenv").config();
 
-async function main() {
-  const hallOfFameDeployment = await ethers.getContractFactory(
-    "ShapeshiftHallOfFame"
-  );
-  const hallOfFame = await hallOfFameDeployment.deploy(TIMELOCK_DURATION);
+const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  const accounts = await ethers.getSigners() as SignerWithAddress[];
+  const { deploy } = hre.deployments;
 
-  console.info("Hall of Fame deployed to:", hallOfFame.address);
-}
+  await deploy("ShapeshiftHallOfFame", {
+    from: accounts[0].address,
+    args: [TIMELOCK_DURATION],
+    log: true
+  });
+};
+export default func;
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+func.tags = ["ShapeshiftHallOfFame"];

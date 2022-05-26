@@ -5,8 +5,8 @@ import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
+import "hardhat-deploy";
 import "solidity-coverage";
-import { BLOCK_NUMBER } from "./test/constants";
 
 dotenv.config();
 
@@ -18,33 +18,9 @@ dotenv.config();
  */
 const config: HardhatUserConfig = {
   solidity: "0.8.9",
-  networks: {
-    hardhat: {
-      chainId: 1,
-      accounts: {
-        mnemonic: process.env.MNEMONIC,
-      },
-      forking: {
-        url: process.env.MAINNET_URL || "",
-        blockNumber: BLOCK_NUMBER,
-        enabled: true, // Set to false to disable forked mainnet mode
-      },
-    },
-    goerli: {
-      url: process.env.GOERLI_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-    },
-    rinkeby: {
-      url: process.env.RINKEBY_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-    },
-    mainnet: {
-      url: process.env.MAINNET_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-    },
+  paths: {
+    deploy: ["./deploy"],
+    sources: "./contracts",
   },
   gasReporter: {
     enabled: false,

@@ -124,6 +124,15 @@ describe("ShapeshiftHallOfFame", async function () {
   });
 
   describe("fail states", function () {
+    it("Should fail to mint if called by non-owner", async function () {
+      const attacker1 = accounts[1].address;
+      const nftContractAttacker1 = nftContract.connect(accounts[1] as Signer);
+
+      await expect(
+        nftContractAttacker1.safeMint(attacker1, constants.TEST_URI)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+    });
+
     it("Should fail to update the URI if called by non-owner", async function () {
       const recipient1 = accounts[0].address;
       await nftContract.safeMint(recipient1, constants.TEST_URI);
@@ -140,6 +149,14 @@ describe("ShapeshiftHallOfFame", async function () {
       ).to.be.revertedWith(
         "ShapeshiftHallOfFame: URI can only be changed by the owner"
       );
+    });
+
+    it("Should fail to update the timelock if called by non-owner", async function () {
+      const nftContractAttacker1 = nftContract.connect(accounts[1] as Signer);
+
+      await expect(
+        nftContractAttacker1.setTimelockDuration(1000)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
     });
 
     it("Should fail to update the URI while the timelock is active", async function () {
